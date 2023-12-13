@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <title>Histogram</title>
+</head>
+
+<body>
+<script type="text/javascript">
+    let img;
+
+    function preload() {
+        img = loadImage("https://raw.githubusercontent.com/scikit-image/scikit-image/master/skimage/data/astronaut.png");
+    }
+
+    function setup() {
+        createCanvas(256, 512);
+        img.resize(256, 256);
+
+        const hist = new Array(256).fill(0);
+        img.filter('gray');
+        img.loadPixels();
+
+        for (let x = 0; x < img.width; x++) {
+            for (let y = 0; y < img.height; y++) {
+                let pixelColor = img.get(x, y);
+
+                let r = red(pixelColor);
+                let g = green(pixelColor);
+                let b = blue(pixelColor);
+
+                let v = Math.max(r, g, b);
+                hist[v] += 1;
+            }
+        }
+
+        stroke(0, 0, 0);
+        let maxCount = max(hist);
+
+        for (let i = 0; i < hist.length; i++) {
+            hist[i] /= maxCount;
+            hist[i] *= 256 * 5;
+            line(i, 256, i, 256 - hist[i]);
+        }
+
+        image(img, 0, 256);
+    }
+</script>
+</body>
+
+</html>

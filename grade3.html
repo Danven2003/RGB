@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.js"></script>
+    <title>RGB Color Model</title>
+</head>
+<body>
+<script type="text/javascript">
+    let static_image, img_red, img_green, img_blue, img_sum;
+
+    function preload() {
+        static_image = loadImage("https://raw.githubusercontent.com/scikit-image/scikit-image/master/skimage/data/astronaut.png");
+        img_sum = createImage(256, 256);
+    }
+
+    function setup() {
+        createCanvas(512, 512);
+        pixelDensity(1);
+
+        img_red = createImage(256, 256);
+        img_green = createImage(256, 256);
+        img_blue = createImage(256, 256);
+
+        static_image.resize(256, 256);
+
+        static_image.loadPixels();
+
+        processPixels(static_image, img_red, img_green, img_blue);
+
+        image(img_red, 0, 0);
+        image(img_green, 256, 0);
+        image(img_blue, 0, 256);
+
+        img_sum.blend(img_red, 0, 0, 256, 256, 0, 0, 256, 256, ADD);
+        img_sum.blend(img_green, 0, 0, 256, 256, 0, 0, 256, 256, ADD);
+        img_sum.blend(img_blue, 0, 0, 256, 256, 0, 0, 256, 256, ADD);
+
+        image(img_sum, 256, 256);
+    }
+
+    function processPixels(src, dest_red, dest_green, dest_blue) {
+        src.loadPixels();
+        dest_red.loadPixels();
+        dest_green.loadPixels();
+        dest_blue.loadPixels();
+
+        for (let x = 0; x < src.width; x++) {
+            for (let y = 0; y < src.height; y++) {
+                let pos = 4 * (y * src.width + x);
+                let r = src.pixels[pos];
+                let g = src.pixels[pos + 1];
+                let b = src.pixels[pos + 2];
+                let a = src.pixels[pos + 3];
+
+                dest_red.pixels[pos] = r;
+                dest_red.pixels[pos + 1] = 0;
+                dest_red.pixels[pos + 2] = 0;
+                dest_red.pixels[pos + 3] = a;
+
+                dest_green.pixels[pos] = 0;
+                dest_green.pixels[pos + 1] = g;
+                dest_green.pixels[pos + 2] = 0;
+                dest_green.pixels[pos + 3] = a;
+
+                dest_blue.pixels[pos] = 0;
+                dest_blue.pixels[pos + 1] = 0;
+                dest_blue.pixels[pos + 2] = b;
+                dest_blue.pixels[pos + 3] = a;
+            }
+        }
+
+        dest_red.updatePixels();
+        dest_green.updatePixels();
+        dest_blue.updatePixels();
+    }
+</script>
+</body>
+</html>
